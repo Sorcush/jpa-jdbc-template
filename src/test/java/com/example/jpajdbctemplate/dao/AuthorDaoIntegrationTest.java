@@ -24,6 +24,9 @@ class AuthorDaoIntegrationTest {
     void testFindById() {
         Author author = authorDao.findById(1L);
         assertThat(author).isNotNull();
+
+        author = authorDao.findByIdWithBooks(1L);
+        assertThat(author.getBooks()).hasSize(3);
     }
 
     @Test

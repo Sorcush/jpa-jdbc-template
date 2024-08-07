@@ -1,6 +1,7 @@
 package com.example.jpajdbctemplate.dao;
 
 import com.example.jpajdbctemplate.entities.Author;
+import com.example.jpajdbctemplate.mapper.AuthorExtractor;
 import com.example.jpajdbctemplate.mapper.AuthorMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,17 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public Author findById(Long id) {
         return jdbcTemplate.queryForObject("select * from author where id = ?", getRowMapper(), id);
+    }
+
+    @Override
+    public Author findByIdWithBooks(Long id) {
+        String sql = """ 
+                select a.id as id, a.first_name, a.last_name, b.id as book_id, b.isbn, b.publisher, b.title
+                from author a left join book b
+                on a.id = b.author_id
+                where author_id = ?""";
+
+        return jdbcTemplate.query(sql, new AuthorExtractor(), id);
     }
 
     @Override
