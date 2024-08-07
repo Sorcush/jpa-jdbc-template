@@ -6,14 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("local")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ComponentScan(basePackages = {"com.example.jpajdbc.dao"})
+@ComponentScan(basePackages = {"com.example.jpajdbctemplate.dao"})
 class BookDaoIntegrationTest {
 
     @Autowired
@@ -30,6 +32,7 @@ class BookDaoIntegrationTest {
         Book book = bookDao.findByTitle("Clean Code");
         assertThat(book).isNotNull();
     }
+
     @Test
     void testSave() {
         Book book = new Book("Hobbit", "123445", "Publisher", 1L);
@@ -52,8 +55,8 @@ class BookDaoIntegrationTest {
         Book book = new Book("Hobbit", "123445", "Publisher", 1L);
         Book savedBook = bookDao.save(book);
         bookDao.delete(savedBook.getId());
-        savedBook = bookDao.findById(savedBook.getId());
-        assertThat(savedBook).isNull();
+        Long id = savedBook.getId();
+        assertThrows(EmptyResultDataAccessException.class, () -> bookDao.findById(id));
     }
 
 }

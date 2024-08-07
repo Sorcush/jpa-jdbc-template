@@ -6,14 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("local")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ComponentScan(basePackages = {"com.example.jpajdbc.dao"})
+@ComponentScan(basePackages = {"com.example.jpajdbctemplate.dao"})
 class AuthorDaoIntegrationTest {
     @Autowired
     private AuthorDao authorDao;
@@ -52,7 +54,7 @@ class AuthorDaoIntegrationTest {
         Author author = new Author("Michael", "Jackson");
         Author savedAuthor = authorDao.save(author);
         authorDao.delete(savedAuthor.getId());
-        savedAuthor = authorDao.findById(savedAuthor.getId());
-        assertThat(savedAuthor).isNull();
+        Long id = savedAuthor.getId();
+        assertThrows(EmptyResultDataAccessException.class, () -> authorDao.findById(id));
     }
 }
