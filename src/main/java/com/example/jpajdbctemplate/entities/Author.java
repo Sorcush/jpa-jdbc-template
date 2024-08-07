@@ -1,13 +1,12 @@
 package com.example.jpajdbctemplate.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -22,6 +21,9 @@ public class Author {
 
     private String firstName;
     private String lastName;
+
+    @Transient  // we don't want this entity to have books list in db
+    private List<Book> books;
 
     public Author(String firstName, String lastName) {
         this.firstName = firstName;
